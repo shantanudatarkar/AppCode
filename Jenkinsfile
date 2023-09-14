@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    options {
+        // Specify the custom workspace for Docker containers
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        customWorkspace '/var/lib/jenkins/workspace/Appcode@2'
+    }
+
     stages {
         stage('Checkout SCM') {
             steps {
@@ -15,7 +21,7 @@ pipeline {
             agent {
                 docker {
                     image 'cimg/node:20.3.1'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock -w /var/lib/jenkins/workspace/Appcode@2'
                 }
             }
             steps {
@@ -36,7 +42,7 @@ pipeline {
             agent {
                 docker {
                     image 'cimg/base:2023.06'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock -w /var/lib/jenkins/workspace/Appcode@2'
                 }
             }
             steps {
