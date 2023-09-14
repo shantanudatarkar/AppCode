@@ -2,6 +2,24 @@ pipeline {
     agent any
 
     stages {
+        stage('Check Disk Space') {
+            steps {
+                script {
+                    def freeSpace = sh(script: "df -h / | awk 'NR==2{print \$4}'", returnStdout: true).trim()
+                    echo "Free disk space: ${freeSpace}"
+
+                    // Define a threshold (e.g., 1 GB) to determine if there's enough space
+                    def threshold = "1G"
+
+                    if (freeSpace >= threshold) {
+                        echo "There is enough free space. Proceeding with the pipeline."
+                    } else {
+                        error "Insufficient disk space. Aborting the pipeline."
+                    }
+                }
+            }
+        }
+
         stage('Build and Push') {
             agent {
                 docker {
