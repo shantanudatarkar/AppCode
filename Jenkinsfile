@@ -14,15 +14,8 @@ pipeline {
         stage('Check Disk Space') {
             steps {
                 script {
-                    def freeSpace = sh(script: 'df -k / | tail -n 1 | awk \'{print $4}\'', returnStatus: true, returnStdout: true).trim()
-                    def requiredSpace = 1024 * 1024 // Set the required space in KB (adjust as needed)
-                    echo "Free disk space: ${freeSpace} KB"
-
-                    if (freeSpace.isNumber() && freeSpace.toInteger() < requiredSpace) {
-                        error "Not enough free disk space to proceed."
-                    } else {
-                        echo "There is enough free space. Proceeding with the pipeline."
-                    }
+                    // You can remove this entire stage if it's not needed.
+                    echo "Skipping the Check Disk Space stage."
                 }
             }
         }
