@@ -33,6 +33,9 @@ pipeline {
                     echo "Building Docker image: ${version}"
                     
                     try {
+                        // Set the DOCKER_BUILDKIT environment variable
+                        env.DOCKER_BUILDKIT = '1'
+                        
                         // Prune Docker images to free up disk space
                         sh "docker image prune -a --filter \"until=${30*24*3600}\" -f"
                     } catch (Exception e) {
