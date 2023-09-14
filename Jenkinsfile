@@ -43,8 +43,9 @@ pipeline {
                     }
                     
                     // Build the Docker image
-                    sh "docker build -t piyushsachdeva/todo-app:${version} ."
-                    
+                    //sh "docker build -t piyushsachdeva/todo-app:${version} ."
+                    sh "docker build --no-cache -t piyushsachdeva/todo-app:${version} ."
+
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         // Login to Docker Hub
                         sh "echo \${DOCKER_PASSWORD} | docker login -u \${DOCKER_USERNAME} --password-stdin"
