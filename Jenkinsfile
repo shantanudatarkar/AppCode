@@ -11,15 +11,6 @@ pipeline {
             }
         }
 
-        stage('Check Disk Space') {
-            steps {
-                script {
-                    // You can remove this entire stage if it's not needed.
-                    echo "Skipping the Check Disk Space stage."
-                }
-            }
-        }
-
         stage('Build and Push') {
             agent {
                 docker {
@@ -31,8 +22,8 @@ pipeline {
                 script {
                     def version = "build-${BUILD_NUMBER}"
                     echo "Building Docker image: ${version}"
-                    //sh  "docker image prune -a --filter \"until=${30*24*3600}\" -f"
-                    sh "sudo docker build -t piyushsachdeva/todo-app:${version} ."
+                    sh "docker image prune -a --filter \"until=${30*24*3600}\" -f"
+                    sh "docker build -t piyushsachdeva/todo-app:${version} ."
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "echo \${DOCKER_PASSWORD} | docker login -u \${DOCKER_USERNAME} --password-stdin"
                         sh "docker push piyushsachdeva/todo-app:${version}"
