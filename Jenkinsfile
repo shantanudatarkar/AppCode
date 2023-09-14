@@ -6,10 +6,9 @@ pipeline {
             steps {
                 script {
                     def freeSpace = sh(script: 'df -h / | awk \'NR==2{print $4}\'', returnStatus: true, returnStdout: true).trim()
-                    echo "Free disk space: ${freeSpace}"
-                    
-                    def requiredSpace = 1024  // Set the required space in MB (adjust as needed)
-                    
+                    def requiredSpace = 1024 // Set the required space in MB (adjust as needed)
+                    echo "Free disk space: ${freeSpace} MB"
+
                     if (freeSpace.toInteger() < requiredSpace) {
                         error "Not enough free disk space to proceed."
                     } else {
