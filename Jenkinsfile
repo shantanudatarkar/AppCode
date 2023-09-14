@@ -13,7 +13,9 @@ pipeline {
                 checkout scm
                 script {
                     def version = "build-${BUILD_NUMBER}"
-                    echo version
+                    echo "Building Docker image: ${version}"
+                    // Clean up Docker images older than a certain threshold (e.g., 7 days)
+                    sh "docker image prune -a --filter \"until=${30*24*3600}\" -f"
                     sh "docker build -t piyushsachdeva/todo-app:${version} ."
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "echo \${DOCKER_PASSWORD} | docker login -u \${DOCKER_USERNAME} --password-stdin"
