@@ -25,6 +25,9 @@ pipeline {
                 docker {
                     image 'cimg/node:20.3.1'
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
+                    // Specify volume mounts using YAML-style syntax
+                    volumes:
+                        - '/var/run/docker.sock:/var/run/docker.sock'
                 }
             }
             steps {
@@ -43,7 +46,6 @@ pipeline {
                     }
                     
                     // Build the Docker image
-                    //sh "docker build -t piyushsachdeva/todo-app:${version} ."
                     sh "docker build --no-cache -t piyushsachdeva/todo-app:${version} ."
 
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -62,6 +64,9 @@ pipeline {
                 docker {
                     image 'cimg/base:2023.06'
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
+                    // Specify volume mounts using YAML-style syntax
+                    volumes:
+                        - '/var/run/docker.sock:/var/run/docker.sock'
                 }
             }
             steps {
