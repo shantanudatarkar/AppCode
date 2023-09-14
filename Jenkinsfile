@@ -9,7 +9,7 @@ pipeline {
                     def requiredSpace = 1024 // Set the required space in MB (adjust as needed)
                     echo "Free disk space: ${freeSpace} MB"
 
-                    if (freeSpace.toInteger() < requiredSpace) {
+                    if (freeSpace.isNumber() && freeSpace.toInteger() < requiredSpace) {
                         error "Not enough free disk space to proceed."
                     } else {
                         echo "There is enough free space. Proceeding with the pipeline."
