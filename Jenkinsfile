@@ -2,12 +2,21 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout SCM') {
+            steps {
+                script {
+                    def gitUrl = 'https://github.com/shantanudatarkar/AppCode.git'
+                    checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'Github_id', url: gitUrl]]])
+                }
+            }
+        }
+
         stage('Check Disk Space') {
             steps {
                 script {
-                    def freeSpace = sh(script: 'df -h / | awk \'NR==2{print $4}\'', returnStatus: true, returnStdout: true).trim()
-                    def requiredSpace = 1024 // Set the required space in MB (adjust as needed)
-                    echo "Free disk space: ${freeSpace} MB"
+                    def freeSpace = sh(script: 'df -k / | tail -n 1 | awk \'{print $4}\'', returnStatus: true, returnStdout: true).trim()
+                    def requiredSpace = 1024 * 1024 // Set the required space in KB (adjust as needed)
+                    echo "Free disk space: ${freeSpace} KB"
 
                     if (freeSpace.isNumber() && freeSpace.toInteger() < requiredSpace) {
                         error "Not enough free disk space to proceed."
@@ -26,7 +35,6 @@ pipeline {
                 }
             }
             steps {
-                checkout scm
                 script {
                     def version = "build-${BUILD_NUMBER}"
                     echo "Building Docker image: ${version}"
@@ -48,7 +56,6 @@ pipeline {
                 }
             }
             steps {
-                checkout scm
                 script {
                     def TAG = BUILD_NUMBER.toInteger() - 1
                     def gitUrl = 'https://github.com/piyushsachdeva/kube_manifest.git'
