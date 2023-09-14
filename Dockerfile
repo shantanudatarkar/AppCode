@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install 
+RUN npm install && npm cache clean --force
 
 COPY . .
 
@@ -13,7 +13,3 @@ RUN npm run build
 FROM nginx:latest AS deployer
 
 COPY --from=installer /app/build /usr/share/nginx/html
-
-
-
-
