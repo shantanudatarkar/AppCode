@@ -5,16 +5,15 @@ pipeline {
         stage('Check Disk Space') {
             steps {
                 script {
-                    def freeSpace = sh(script: "df -h / | awk 'NR==2{print \$4}'", returnStdout: true).trim()
+                    def freeSpace = sh(script: 'df -h / | awk \'NR==2{print $4}\'', returnStatus: true, returnStdout: true).trim()
                     echo "Free disk space: ${freeSpace}"
-
-                    // Define a threshold (e.g., 1 GB) to determine if there's enough space
-                    def threshold = "1G"
-
-                    if (freeSpace >= threshold) {
-                        echo "There is enough free space. Proceeding with the pipeline."
+                    
+                    def requiredSpace = 1024  // Set the required space in MB (adjust as needed)
+                    
+                    if (freeSpace.toInteger() < requiredSpace) {
+                        error "Not enough free disk space to proceed."
                     } else {
-                        error "Insufficient disk space. Aborting the pipeline."
+                        echo "There is enough free space. Proceeding with the pipeline."
                     }
                 }
             }
@@ -32,7 +31,6 @@ pipeline {
                 script {
                     def version = "build-${BUILD_NUMBER}"
                     echo "Building Docker image: ${version}"
-                    // Clean up Docker images older than a certain threshold (e.g., 7 days)
                     sh "docker image prune -a --filter \"until=${30*24*3600}\" -f"
                     sh "docker build -t piyushsachdeva/todo-app:${version} ."
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
